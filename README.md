@@ -6,7 +6,7 @@ Takes a vendor submission (form data + documents) and returns **APPROVED / PENDI
 - [x] Day 2 — test data, specimen documents, format validators (+ tests)
 - [x] Day 3 — intake, completeness checks, document classification & extraction (Claude)
 - [x] Day 4 — cross-reference + risk checks, decision engine, message drafting
-- [ ] Day 5 — edge cases end-to-end, resubmission loop
+- [x] Day 5 — edge cases end-to-end, resubmission loop, run history
 - [ ] Day 6 — UI (live run view + dashboard), deploy
 - [ ] Day 7 — demo prep, video, submit
 
@@ -29,6 +29,13 @@ python -m app.run_stage3 --all --json out.json
 ```bash
 python -m app.run_pipeline test_cases/04_gst_state_mismatch
 python -m app.run_pipeline --all          # runs all six and prints a scoreboard
+```
+
+## Resubmission loop + history (Day 5)
+```bash
+python -m app.run_pipeline --demo-resubmission   # 05a (wrong document) then 05b (corrected)
+python -m app.history                            # every run
+python -m app.history SUB-1005                   # all versions of one submission, with what changed
 ```
 
 ## Test cases

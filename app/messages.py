@@ -33,7 +33,7 @@ def _company(sub):
 
 def _ref(sub):
     v = sub.get("version", 1)
-    return f"{sub['submission_id']}" + (f" (v{v})" if v and v > 1 else "")
+    return f"{sub['submission_id']}" + (f", v{v}" if v and v > 1 else "")
 
 
 def _numbered(asks):
@@ -67,7 +67,8 @@ def vendor_message(decision: dict, sub: dict, reader=None) -> dict:
     status, name, company, ref = decision["status"], _contact(sub), _company(sub), _ref(sub)
     if status == APPROVED:
         return {"source": "template", "subject": f"Approved: {company} is now a registered vendor ({ref})",
-                "body": f"Dear {name},\n\nGood news: your vendor onboarding for {company} has been approved. "
+                "body": f"Dear {name},\n\n" + ("Thank you for sending the corrected information. " if sub.get("version", 1) > 1 else "") +
+                        f"Good news: your vendor onboarding for {company} has been approved. "
                         "Your details are now on our vendor records and you can start working with us.\n\n"
                         "Regards,\nProcurement Team"}
     if status == REJECTED:
@@ -88,7 +89,7 @@ def vendor_message(decision: dict, sub: dict, reader=None) -> dict:
             "body": f"{opening}\n\n{_numbered(asks)}\n\n{closing}\n\nRegards,\nProcurement Team"}
 
 
-NEXT_STEP = {APPROVED: "Add the vendor to the vendor master and notify the requester.",
+NEXT_STEP = {APPROVED: "Vendor approved and recorded. Notify the requester.",
              PENDING: "Waiting for the vendor. Re-run this submission when they respond.",
              REJECTED: "Do NOT onboard. Review manually. Do not share the reasons with the vendor."}
 

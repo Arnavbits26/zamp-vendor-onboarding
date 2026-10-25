@@ -36,7 +36,10 @@ Kept deliberately short so it can be referenced live in the interview.
 Names are compared after normalising case, punctuation and company suffixes ("Pvt Ltd" = "Private Limited"). A sole proprietor's bank account in the owner's personal name is valid **only** when the GST certificate links that person to the trade name.
 
 ## Resubmission
-A resubmission keeps the same submission ID with a new version number. The whole pipeline re-runs (simplest way to guarantee nothing stale is trusted), and the UI highlights which checks changed between versions.
+A resubmission keeps the same submission ID with a higher version number. The **whole pipeline re-runs**, so every rule is re-applied to the new data and nothing stale is trusted. The one shortcut: a file that is byte-for-byte identical to the previous version is not sent to the model again (its earlier reading is reused, and every check on it is re-run). A file that was unreadable last time is always re-read. The result records what changed: files, form fields, problems fixed, checks that became possible, and any new problems.
+
+## Run history and vendor records
+Every run is saved (SQLite) with its full result: the audit trail. Vendors approved by this process are added to the vendor records, so a later submission that reuses their bank account, GSTIN or PAN is caught like any other duplicate. A submission is never compared against itself.
 
 ## Decision policy (the core judgement)
 - **Missing or fixable information -> PENDING.** Typos, wrong or unreadable files, a state mismatch: a genuine vendor can fix these, so they get a precise list of what to send.

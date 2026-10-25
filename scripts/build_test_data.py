@@ -194,6 +194,7 @@ SUBMISSIONS = {
                  "cancelled_cheque": "photo", "certificate_of_incorporation": "pdf"},
     },
     "05b_wrong_document_resubmitted": {
+        "share_docs_from": "05a_wrong_document",   # vendor re-sends the SAME files, except the GST certificate
         "expected": "APPROVED",
         "why": "Same vendor resubmits with the correct GST certificate. Only the failed "
                "check needs to re-run; outcome moves PENDING -> APPROVED.",
@@ -439,6 +440,9 @@ def write_doc(slot: str, style: str, sub: dict, docs_dir: Path) -> str:
 # 4. Build everything
 # ==========================================================================
 
+SUBMISSIONS_DONE: dict = {}
+
+
 def main():
     DATA.mkdir(exist_ok=True)
     (DATA / "vendors_master.json").write_text(json.dumps(VENDOR_MASTER, indent=2))
@@ -453,8 +457,16 @@ def main():
         docs_dir = case_dir / "docs"
         docs_dir.mkdir(parents=True)
         sub = spec["sub"]
-        sub["documents"] = {slot: f"docs/{write_doc(slot, style, sub, docs_dir)}"
-                            for slot, style in spec["docs"].items()}
+        sub["documents"] = {}
+        for slot, style in spec["docs"].items():
+            donor = spec.get("share_docs_from")
+            if donor and slot != "gst_certificate":      # byte-identical copy of the earlier upload
+                src = CASES / donor / SUBMISSIONS_DONE[donor]["documents"][slot]
+                shutil.copy(src, docs_dir / src.name)
+                sub["documents"][slot] = f"docs/{src.name}"
+            else:
+                sub["documents"][slot] = f"docs/{write_doc(slot, style, sub, docs_dir)}"
+        SUBMISSIONS_DONE[case_id] = sub
         (case_dir / "submission.json").write_text(json.dumps(sub, indent=2))
         manifest.append({"case": case_id, "submission_id": sub["submission_id"],
                          "vendor": sub["company"]["vendor_name"],

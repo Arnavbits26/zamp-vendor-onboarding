@@ -10,6 +10,7 @@ Stage 3 - Document reading.
 """
 from __future__ import annotations
 
+import hashlib
 import io
 import re
 from pathlib import Path
@@ -154,8 +155,18 @@ def verify_document(slot: str, ex: dict) -> list[RuleResult]:
 
 
 # ------------------------------------------------------------ orchestrator
-def read_documents(sub: dict, reader, log: RunLog | None = None) -> dict:
-    """Read every uploaded document. Returns {slot: {route, chars, extraction, rules}}."""
+def file_sha256(path) -> str:
+    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+
+
+def read_documents(sub: dict, reader, log: RunLog | None = None, reuse: dict | None = None) -> dict:
+    """
+    Read every uploaded document. Returns {slot: {route, chars, extraction, rules, sha256, reused}}.
+
+    `reuse` maps slot -> {sha256, route, extraction} from the previous version of a submission.
+    A file that is byte-for-byte identical is NOT sent to the model again: its earlier reading
+    is reused, and the checks on it are simply re-applied.
+    """
     out: dict = {}
     paths = sub.get("_doc_paths", {})
     slots = [s for s in ALL_DOCS if s in paths and Path(paths[s]).is_file()]
@@ -164,7 +175,20 @@ def read_documents(sub: dict, reader, log: RunLog | None = None) -> dict:
 
     for slot in slots:
         label = DOC_LABELS[slot]
-        entry = {"slot": slot, "route": None, "chars": 0, "extraction": None, "rules": []}
+        entry = {"slot": slot, "route": None, "chars": 0, "extraction": None, "rules": [],
+                 "sha256": file_sha256(paths[slot]), "reused": False}
+        old = (reuse or {}).get(slot)
+        if old and old["sha256"] == entry["sha256"] and old.get("extraction"):
+            entry.update(route=old["route"], extraction=old["extraction"], reused=True)
+            entry["rules"] = verify_document(slot, old["extraction"])
+            if log:
+                log.emit("documents", "info",
+                         f"{label}: unchanged since the previous version - reusing the earlier reading (no model call)",
+                         slot=slot, route="reused")
+                log.emit("documents", "info", f"{label}: read and verified", slot=slot,
+                         rules=[r.to_dict() for r in entry["rules"]], fields=old["extraction"].get("fields"))
+            out[slot] = entry
+            continue
         try:
             t = triage(paths[slot])
             entry["route"], entry["chars"] = t["route"], t["chars"]

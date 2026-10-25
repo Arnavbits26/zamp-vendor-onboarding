@@ -37,8 +37,8 @@ def perfect_read(doc_type, sub):
 class OracleReader:
     """Answers document reads in the order the pipeline asks (ALL_DOCS order, present slots only)."""
 
-    def __init__(self, case, wrong=None, tweak=None):
-        sub = json.loads((CASES / case / "submission.json").read_text())
+    def __init__(self, case, wrong=None, tweak=None, case_dir=None):
+        sub = json.loads(((case_dir or CASES / case) / "submission.json").read_text())
         self.queue = []
         for slot in ALL_DOCS:
             if slot in sub["documents"]:
@@ -48,8 +48,10 @@ class OracleReader:
                     tweak[slot](ex)
                 self.queue.append(ex)
         self.drafts = []
+        self.reads = 0
 
     def read(self, **kw):
+        self.reads += 1
         return self.queue.pop(0)
 
     def draft(self, system, prompt):

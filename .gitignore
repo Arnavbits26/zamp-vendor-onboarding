@@ -10,3 +10,8 @@ runs.json
 run_log.txt
 case_log.txt
 data/runs.db
+runs.json
+run_log.txt
+case_log.txt
+demo_log.txt
+data/runs.db
