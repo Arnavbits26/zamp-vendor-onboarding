@@ -62,7 +62,12 @@ h3{font-size:13px;margin:0 0 8px;color:var(--muted);text-transform:uppercase;let
 .case{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
 .case:hover{border-color:var(--accent)}
 .case[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 2px var(--run-bg)}
-.case .t{font-weight:650}.case .d{color:var(--muted);font-size:13px;margin-top:2px}
+.case .t{font-weight:650;min-width:0}
+.case .d{color:var(--muted);font-size:13px;margin-top:2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.case[aria-pressed=true] .d{display:block;overflow:visible}
+.chead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.chead .badge{flex-shrink:0;white-space:nowrap}
+.runrow{position:sticky;bottom:0;z-index:5;background:var(--panel);margin-top:14px;padding:12px 0 4px;border-top:1px solid var(--line)}
 label.f{display:block;font-size:12.5px;color:var(--muted);margin-bottom:10px;font-weight:600}
 label.f input,label.f select{display:block;width:100%;margin-top:3px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-weight:400}
 label.f input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
@@ -179,7 +184,7 @@ tbody tr[aria-selected=true]{background:var(--run-bg)}
         </div>
         <div id="cases-pane"><div id="caselist"></div></div>
         <div id="custom-pane" class="hidden"></div>
-        <div class="row" style="margin-top:14px">
+        <div class="row runrow">
           <button class="btn primary" id="runbtn" disabled>Run process</button>
           <label class="f" style="margin:0;flex:1;min-width:130px">Playback
             <select id="speed">
@@ -340,7 +345,15 @@ function ensureCard(id) {
   let before = null;
   for (let j = idx + 1; j < STAGES.length && !before; j++) before = cards[STAGES[j][0]] && cards[STAGES[j][0]].li;
   list.insertBefore(card.li, before);
-  return (cards[id] = card);
+  cards[id] = card;
+  renumber();
+  return card;
+}
+function renumber() {
+  [...$("#stages").children].forEach((li, i) => {
+    if (li.getAttribute("data-s") !== "waiting") return;
+    const sp = li.querySelector(".ico span"); if (sp) sp.textContent = String(i + 1);
+  });
 }
 function setState(card, s) {
   card.li.setAttribute("data-s", s);
@@ -505,7 +518,7 @@ function renderCases() {
   const box = clear($("#caselist"));
   state.cases.forEach(c => box.append(h("button", { class: "case", "aria-pressed": String(state.selected === c.source),
     onclick: () => { state.selected = c.source; renderCases(); updateRunButton(); } },
-    h("div", { class: "row", style: "justify-content:space-between" }, h("span", { class: "t" }, c.vendor), h("span", { class: "badge b-neutral" }, c.submission_id + (c.version > 1 ? " \u00b7 v" + c.version : ""))),
+    h("div", { class: "chead" }, h("span", { class: "t" }, c.vendor), h("span", { class: "badge b-neutral" }, c.submission_id + (c.version > 1 ? " \u00b7 v" + c.version : ""))),
     h("div", { class: "d" }, c.why || c.name))));
 }
 function blankForm() {
