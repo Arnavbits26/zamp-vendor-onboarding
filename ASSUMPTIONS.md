@@ -50,6 +50,12 @@ Every run is saved (SQLite) with its full result: the audit trail. Vendors appro
 - **Messages:** vendor asks are fixed, vendor-safe wording written by code. The model only writes a friendly greeting and sign-off for PENDING emails (with a template fallback). REJECTED emails are a fixed template: no model, no reasons.
 - Name matching ignores case, punctuation, word order and company suffixes ("Pvt Ltd" = "Private Limited"); one-letter typos count as 'close' (a warning), anything else as different.
 
+## Web app and hosting
+- The run view streams the pipeline's own events as they happen (server-sent events), so what you watch is the real execution, not a replay. A *playback* control only slows the on-screen animation, because a cached or fast run would otherwise finish instantly.
+- Uploaded files are identified by their content (not file name or extension), size-limited, stored under a random ID, and never executed. Form values are trimmed to known fields and lengths.
+- The public link is protected from abuse of the free model quota: a per-visitor hourly run limit and a cap on simultaneous runs.
+- Run history is SQLite on the host's disk; on a free host it resets on restart. A real deployment would use a managed database.
+
 ## Rule ID scheme
 | Prefix | Stage | Examples |
 |---|---|---|

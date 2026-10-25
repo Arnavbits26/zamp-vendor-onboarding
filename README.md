@@ -7,7 +7,7 @@ Takes a vendor submission (form data + documents) and returns **APPROVED / PENDI
 - [x] Day 3 — intake, completeness checks, document classification & extraction (Claude)
 - [x] Day 4 — cross-reference + risk checks, decision engine, message drafting
 - [x] Day 5 — edge cases end-to-end, resubmission loop, run history
-- [ ] Day 6 — UI (live run view + dashboard), deploy
+- [x] Day 6 — UI (live run view + dashboard); deploy: see below
 - [ ] Day 7 — demo prep, video, submit
 
 ## Setup
@@ -37,6 +37,21 @@ python -m app.run_pipeline --demo-resubmission   # 05a (wrong document) then 05b
 python -m app.history                            # every run
 python -m app.history SUB-1005                   # all versions of one submission, with what changed
 ```
+
+## Web UI (Day 6)
+```bash
+uvicorn app.server:app --reload        # then open http://127.0.0.1:8000
+```
+* **Run** page: pick a test case or build a custom submission (start from a case, edit any field, replace any file) and watch each stage run live. *Playback* sets the pace of the animation; the work itself happens at full speed.
+* **Dashboard**: every run, filter and search, drill into any run's checks, documents, messages and what changed, and resubmit with changes.
+
+Optional browser-level test (needs Node): `cd tests/e2e && npm install`, then `python tests/e2e/serve.py 8765 &` and `node tests/e2e/run.mjs http://127.0.0.1:8765`.
+
+## Deploy (Render, free)
+1. Push to GitHub (never commit `.env`).
+2. Render > New + > Blueprint > choose the repo (it reads `render.yaml`).
+3. Enter `GEMINI_API_KEY`, `GEMINI_MODEL`, `GEMINI_FALLBACK_MODEL` when asked.
+4. Free instances sleep after ~15 minutes idle and take about a minute to wake: open the link before a demo. Run history lives on the instance's disk and resets on redeploy or restart, so run the 05a then 05b cases once to repopulate the dashboard.
 
 ## Test cases
 | Case | Vendor | Expected | What it tests |

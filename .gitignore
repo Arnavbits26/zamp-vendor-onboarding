@@ -15,3 +15,5 @@ run_log.txt
 case_log.txt
 demo_log.txt
 data/runs.db
+data/uploads/
+tests/e2e/node_modules/

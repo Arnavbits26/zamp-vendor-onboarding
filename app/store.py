@@ -62,29 +62,33 @@ class Store:
                  result["headline"], _now(), json.dumps(result)))
         return cur.lastrowid
 
+    def _all(self, sql: str, args: tuple = ()) -> list:
+        with self._lock:
+            return self.conn.execute(sql, args).fetchall()
+
     def list_runs(self, limit: int = 200) -> list[dict]:
-        rows = self.conn.execute(
+        rows = self._all(
             "SELECT run_id, submission_id, version, vendor_name, status, headline, created_at "
-            "FROM runs ORDER BY run_id DESC LIMIT ?", (limit,)).fetchall()
+            "FROM runs ORDER BY run_id DESC LIMIT ?", (limit,))
         return [dict(r) for r in rows]
 
     def get_run(self, run_id: int) -> dict | None:
-        row = self.conn.execute("SELECT result_json FROM runs WHERE run_id=?", (run_id,)).fetchone()
-        return json.loads(row["result_json"]) if row else None
+        rows = self._all("SELECT result_json FROM runs WHERE run_id=?", (run_id,))
+        return json.loads(rows[0]["result_json"]) if rows else None
 
     def previous_run(self, submission_id: str, before_version: int) -> dict | None:
         """The most recent run of an EARLIER version of this submission."""
-        row = self.conn.execute(
+        rows = self._all(
             "SELECT result_json FROM runs WHERE submission_id=? AND version<? "
-            "ORDER BY version DESC, run_id DESC LIMIT 1", (submission_id, before_version)).fetchone()
-        return json.loads(row["result_json"]) if row else None
+            "ORDER BY version DESC, run_id DESC LIMIT 1", (submission_id, before_version))
+        return json.loads(rows[0]["result_json"]) if rows else None
 
     def versions(self, submission_id: str) -> list[dict]:
         """Latest run of each version, oldest first."""
-        rows = self.conn.execute(
+        rows = self._all(
             "SELECT result_json FROM runs WHERE run_id IN "
             "(SELECT MAX(run_id) FROM runs WHERE submission_id=? GROUP BY version) ORDER BY version",
-            (submission_id,)).fetchall()
+            (submission_id,))
         return [json.loads(r["result_json"]) for r in rows]
 
     # --------------------------------------------------------------- vendors
@@ -99,8 +103,7 @@ class Store:
 
     def approved_vendors(self, exclude_submission: str | None = None) -> list[dict]:
         """Vendors approved by this process, shaped like vendor-master entries."""
-        rows = self.conn.execute("SELECT * FROM vendors WHERE submission_id IS NOT ?",
-                                 (exclude_submission,)).fetchall()
+        rows = self._all("SELECT * FROM vendors WHERE submission_id IS NOT ?", (exclude_submission,))
         return [{"vendor_id": r["vendor_id"], "legal_name": r["legal_name"], "pan": r["pan"],
                  "gstin": r["gstin"], "ifsc": r["ifsc"], "account_number": r["account_number"],
                  "status": "approved"} for r in rows]

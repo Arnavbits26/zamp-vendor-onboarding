@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vendor onboarding</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#ffffff; --ink:#14181f; --muted:#5d6675; --line:#e3e6ec; --soft:#f0f2f6;
+  --accent:#2457d6; --accent-ink:#ffffff;
+  --ok:#157f43; --ok-bg:#e5f6ec; --warn:#a15c07; --warn-bg:#fdf1de; --bad:#b42318; --bad-bg:#fde8e6;
+  --skip:#7b8494; --run:#2457d6; --run-bg:#e8eefc;
+  --radius:12px; --shadow:0 1px 2px rgba(20,24,31,.06),0 4px 14px rgba(20,24,31,.05);
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0f1218; --panel:#171b23; --ink:#e8ebf1; --muted:#9aa3b2; --line:#272d39; --soft:#1e2430;
+    --accent:#6b93ff; --accent-ink:#0b0f17; --ok:#4cc784; --ok-bg:#12281d; --warn:#f0b35a; --warn-bg:#2d2312;
+    --bad:#ff8077; --bad-bg:#32181a; --skip:#8a93a3; --run:#7da2ff; --run-bg:#18233f;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 4px 14px rgba(0,0,0,.25)}
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+.wrap{max-width:1280px;margin:0 auto;padding:0 20px}
+header.top{background:var(--panel);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
+.top .wrap{display:flex;align-items:center;gap:20px;height:60px}
+.brand{font-weight:700;letter-spacing:-.01em;font-size:17px;display:flex;align-items:center;gap:10px}
+.brand .mark{width:26px;height:26px;border-radius:7px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:14px}
+nav{display:flex;gap:4px;margin-left:8px}
+nav a{padding:8px 14px;border-radius:8px;color:var(--muted);text-decoration:none;font-weight:600}
+nav a:hover{background:var(--soft);color:var(--ink)}
+nav a[aria-current=page]{background:var(--soft);color:var(--ink)}
+.spacer{flex:1}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--muted);background:var(--panel)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--skip)}
+.dot.on{background:var(--ok)} .dot.off{background:var(--bad)}
+main{padding:22px 0 60px}
+h1{font-size:22px;letter-spacing:-.01em;margin:0 0 4px}
+h2{font-size:16px;margin:0 0 10px}
+h3{font-size:13px;margin:0 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.sub{color:var(--muted);margin:0 0 18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+.legend{display:flex;flex-wrap:wrap;gap:10px 22px;margin:0 0 18px;font-size:13.5px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:minmax(320px,400px) 1fr;gap:20px;align-items:start}
+@media (max-width:960px){.grid{grid-template-columns:1fr}}
+.badge{display:inline-block;padding:2px 9px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.02em}
+.b-approved{background:var(--ok-bg);color:var(--ok)} .b-pending{background:var(--warn-bg);color:var(--warn)}
+.b-rejected{background:var(--bad-bg);color:var(--bad)} .b-neutral{background:var(--soft);color:var(--muted)}
+.b-info{background:var(--run-bg);color:var(--run)}
+.seg{display:inline-flex;background:var(--soft);border-radius:9px;padding:3px;margin-bottom:14px}
+.seg button{border:0;background:none;padding:6px 14px;border-radius:7px;cursor:pointer;color:var(--muted);font-weight:600}
+.seg button[aria-pressed=true]{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.btn{border:1px solid var(--line);background:var(--panel);padding:8px 14px;border-radius:9px;cursor:pointer;font-weight:600}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn[disabled]{opacity:.55;cursor:not-allowed}
+.btn.small{padding:4px 10px;font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.case{display:block;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.case:hover{border-color:var(--accent)}
+.case[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 2px var(--run-bg)}
+.case .t{font-weight:650}.case .d{color:var(--muted);font-size:13px;margin-top:2px}
+label.f{display:block;font-size:12.5px;color:var(--muted);margin-bottom:10px;font-weight:600}
+label.f input,label.f select{display:block;width:100%;margin-top:3px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font-weight:400}
+label.f input:focus,select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+.fileline{font-size:13px;margin-bottom:10px}
+.fileline .nm{font-weight:650}.fileline small{color:var(--muted)}
+.chip{display:block;background:var(--run-bg);color:var(--run);border-radius:8px;padding:6px 10px;font-size:13px;font-weight:600;margin-bottom:10px}
+.stages{position:relative;margin:0;padding:0;list-style:none}
+.stage{display:grid;grid-template-columns:30px 1fr;gap:12px;padding-bottom:14px;position:relative}
+.stage:not(:last-child)::before{content:"";position:absolute;left:14px;top:30px;bottom:0;width:2px;background:var(--line)}
+.ico{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;background:var(--soft);color:var(--skip);border:2px solid var(--line)}
+.stage[data-s=running] .ico{background:var(--run-bg);color:var(--run);border-color:var(--run)}
+.stage[data-s=running] .ico span{display:none}
+.stage[data-s=running] .ico::after{content:"";width:12px;height:12px;border:2px solid var(--run);border-right-color:transparent;border-radius:50%;animation:sp .8s linear infinite}
+.stage[data-s=done] .ico{background:var(--ok-bg);color:var(--ok);border-color:var(--ok)}
+.stage[data-s=warn] .ico{background:var(--warn-bg);color:var(--warn);border-color:var(--warn)}
+.stage[data-s=error] .ico{background:var(--bad-bg);color:var(--bad);border-color:var(--bad)}
+@keyframes sp{to{transform:rotate(360deg)}}
+.st-head{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.st-title{font-weight:700}
+.st-time{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.st-msg{color:var(--muted);font-size:14px}
+.stage[data-s=waiting] .st-title{color:var(--muted);font-weight:600}
+.st-body{margin-top:8px}
+.note{font-size:13px;color:var(--muted);margin:2px 0}
+.note.warn{color:var(--warn)}
+.slotbox{border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin:8px 0;background:var(--panel)}
+.slotbox .sh{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:650;font-size:14px}
+.rules{margin:6px 0 0;padding:0;list-style:none}
+.rule{display:grid;grid-template-columns:20px 74px 1fr;gap:6px;padding:4px 0;font-size:13.5px;border-top:1px dashed var(--line)}
+.rule:first-child{border-top:0}
+.rule .i{font-weight:800;text-align:center}
+.rule .id{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:2px}
+.rule .nm{font-weight:600}.rule .dt{color:var(--muted);display:block;font-weight:400}
+.r-PASS .i{color:var(--ok)} .r-FAIL .i{color:var(--bad)} .r-WARN .i{color:var(--warn)} .r-SKIP .i{color:var(--skip)}
+.r-FAIL .nm{color:var(--bad)}
+.banner{border:1px solid var(--warn);background:var(--warn-bg);color:var(--warn);border-radius:10px;padding:8px 12px;margin-bottom:12px;font-size:14px;font-weight:600}
+.banner.err{border-color:var(--bad);background:var(--bad-bg);color:var(--bad)}
+.decision{border-radius:var(--radius);padding:16px 18px;margin-bottom:16px;border:1px solid}
+.decision.approved{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.decision.pending{background:var(--warn-bg);border-color:var(--warn);color:var(--warn)}
+.decision.rejected{background:var(--bad-bg);border-color:var(--bad);color:var(--bad)}
+.decision .big{font-size:26px;font-weight:800;letter-spacing:-.01em}
+.decision .hl{color:var(--ink);margin-top:2px}
+.decision ol,.decision ul{color:var(--ink);margin:10px 0 0;padding-left:20px}
+.decision li{margin:3px 0}
+.decision .lbl{color:var(--ink);font-weight:700;margin-top:12px;font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+.counts{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.counts span{background:var(--panel);color:var(--ink);border-radius:8px;padding:2px 9px;font-size:13px;border:1px solid var(--line)}
+details.sec{border:1px solid var(--line);border-radius:10px;margin-top:12px;background:var(--panel)}
+details.sec>summary{cursor:pointer;padding:10px 14px;font-weight:700;list-style:none;display:flex;justify-content:space-between}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::after{content:"+";color:var(--muted)}
+details.sec[open]>summary::after{content:"\2013"}
+details.sec>.in{padding:0 14px 14px}
+.tabs{display:flex;gap:4px;margin-bottom:10px}
+.tabs button{border:0;background:var(--soft);padding:5px 12px;border-radius:7px;cursor:pointer;color:var(--muted);font-weight:600}
+.tabs button[aria-selected=true]{background:var(--accent);color:var(--accent-ink)}
+.mail{white-space:pre-wrap;background:var(--soft);border-radius:10px;padding:12px 14px;font-size:14px}
+.mail .subj{font-weight:700;margin-bottom:8px;display:block}
+.docs{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+.doc{border:1px solid var(--line);border-radius:10px;padding:10px;background:var(--panel)}
+.doc img{width:100%;height:120px;object-fit:cover;object-position:top;border-radius:7px;border:1px solid var(--line);background:var(--soft)}
+.doc .pdfbox{height:120px;border-radius:7px;border:1px dashed var(--line);display:grid;place-items:center;color:var(--muted);background:var(--soft);text-decoration:none}
+.kv{margin:8px 0 0;font-size:12.5px}
+.kv>div{display:grid;grid-template-columns:104px 1fr;gap:6px;padding:1px 0}
+.kv .k{color:var(--muted)} .kv .v{word-break:break-word;font-family:var(--mono);font-size:12px}
+.chg li{margin:3px 0}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px 16px;box-shadow:var(--shadow)}
+.stat .n{font-size:28px;font-weight:800;letter-spacing:-.02em}.stat .l{font-size:13px;color:var(--muted)}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.bar input[type=search]{padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);min-width:220px}
+.fchip{border:1px solid var(--line);background:var(--panel);padding:4px 12px;border-radius:999px;cursor:pointer;font-weight:600;color:var(--muted)}
+.fchip[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--soft)}
+tbody tr[aria-selected=true]{background:var(--run-bg)}
+.mono{font-family:var(--mono);font-size:12.5px}
+.empty{text-align:center;color:var(--muted);padding:34px 10px}
+.hidden{display:none!important}
+.vers{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 12px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <div class="brand"><span class="mark">V</span> Vendor onboarding</div>
+  <nav aria-label="Pages">
+    <a href="#/run" id="nav-run">Run</a>
+    <a href="#/dashboard" id="nav-dash">Dashboard</a>
+  </nav>
+  <div class="spacer"></div>
+  <span class="pill" id="modelpill" title="Which model reads the documents"><span class="dot" id="modeldot"></span><span id="modeltext">checking...</span></span>
+</div></header>
+
+<main><div class="wrap">
+  <noscript>This page needs JavaScript.</noscript>
+  <div id="page-run">
+    <h1>Run a vendor submission</h1>
+    <p class="sub">Pick a test case or build your own, then watch every stage run live. Each decision cites the rules behind it.</p>
+    <div class="legend">
+      <span><span class="badge b-approved">APPROVED</span> everything agrees</span>
+      <span><span class="badge b-pending">PENDING</span> something is missing or fixable: the vendor gets a precise ask</span>
+      <span><span class="badge b-rejected">REJECTED</span> contradictions that look like fraud: escalated, vendor told nothing</span>
+    </div>
+    <div class="grid">
+      <section class="card" aria-label="Input">
+        <div class="seg" role="group" aria-label="Input type">
+          <button id="mode-cases" aria-pressed="true">Test cases</button>
+          <button id="mode-custom" aria-pressed="false">Custom submission</button>
+        </div>
+        <div id="cases-pane"><div id="caselist"></div></div>
+        <div id="custom-pane" class="hidden"></div>
+        <div class="row" style="margin-top:14px">
+          <button class="btn primary" id="runbtn" disabled>Run process</button>
+          <label class="f" style="margin:0;flex:1;min-width:130px">Playback
+            <select id="speed">
+              <option value="instant">Instant</option><option value="fast">Fast</option>
+              <option value="normal" selected>Normal</option><option value="slow">Slow (for demos)</option>
+            </select>
+          </label>
+        </div>
+        <p class="note" id="runhint" style="margin-top:8px"></p>
+      </section>
+
+      <section aria-label="Live run" aria-live="polite">
+        <div id="runbanner"></div>
+        <div class="card" id="livecard">
+          <div class="row" style="justify-content:space-between;margin-bottom:12px">
+            <h2 style="margin:0">Live run</h2><span id="runmeta" class="note"></span>
+          </div>
+          <ol class="stages" id="stages"></ol>
+        </div>
+        <div id="resultbox" style="margin-top:16px"></div>
+      </section>
+    </div>
+  </div>
+
+  <div id="page-dash" class="hidden">
+    <h1>Dashboard</h1>
+    <p class="sub">Every run, its outcome and the reasoning behind it: the audit trail that today lives in someone's inbox.</p>
+    <div class="stats" id="stats"></div>
+    <div class="card">
+      <div class="bar">
+        <button class="fchip" data-f="ALL" aria-pressed="true">All</button>
+        <button class="fchip" data-f="APPROVED" aria-pressed="false">Approved</button>
+        <button class="fchip" data-f="PENDING" aria-pressed="false">Pending</button>
+        <button class="fchip" data-f="REJECTED" aria-pressed="false">Rejected</button>
+        <input type="search" id="q" placeholder="Search vendor or submission ID" aria-label="Search runs">
+        <span class="spacer"></span>
+        <button class="btn small" id="refresh">Refresh</button>
+      </div>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Run</th><th>Submission</th><th>Ver.</th><th>Vendor</th><th>Outcome</th><th>Summary</th><th>When</th></tr></thead>
+        <tbody id="runs"></tbody>
+      </table></div>
+      <div class="empty hidden" id="noruns"></div>
+    </div>
+    <div id="detail" style="margin-top:16px"></div>
+  </div>
+</div></main>
+
+<script>
+"use strict";
+/* ============================ tiny helpers ============================ */
+const $ = (s, r = document) => r.querySelector(s);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+function h(tag, attrs, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on") && typeof v === "function") el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat(Infinity)) {
+    if (kid == null || kid === false) continue;
+    el.append(kid.nodeType ? kid : document.createTextNode(String(kid)));
+  }
+  return el;
+}
+const clear = el => { while (el.firstChild) el.removeChild(el.firstChild); return el; };
+async function api(path, opts) {
+  const r = await fetch(path, opts);
+  if (!r.ok) {
+    let msg = r.statusText || ("HTTP " + r.status);
+    try { const j = await r.json(); msg = j.error || j.detail || msg; } catch (e) {}
+    throw new Error(msg);
+  }
+  return r.json();
+}
+const ST_CLASS = { APPROVED: "b-approved", PENDING: "b-pending", REJECTED: "b-rejected" };
+const badge = s => h("span", { class: "badge " + (ST_CLASS[s] || "b-neutral") }, s);
+const ICON = { PASS: "\u2714", FAIL: "\u2718", WARN: "!", SKIP: "\u2013" };
+const LABELS = { gst_certificate: "GST registration certificate", pan_card: "PAN card",
+  cancelled_cheque: "Cancelled cheque", certificate_of_incorporation: "Certificate of incorporation" };
+const SLOTS = Object.keys(LABELS);
+const FIELD_NAMES = { legal_name: "Name", trade_name: "Trade name", proprietor_name: "Proprietor", gstin: "GSTIN",
+  pan: "PAN", address: "Address", state: "State", constitution: "Constitution", date: "Date",
+  cin_or_llpin: "CIN / LLPIN", account_holder_name: "Account holder", account_number: "Account no.",
+  ifsc: "IFSC", bank_name: "Bank", marked_cancelled: "Marked cancelled" };
+const ROUTE = { text: ["read as text", "b-neutral"], vision: ["read as image", "b-info"], reused: ["reused, no model call", "b-approved"] };
+function fmtTime(iso) {
+  const d = new Date(iso); if (isNaN(d)) return iso || "";
+  return d.toLocaleString(undefined, { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+/* ============================ state ============================ */
+const SPEEDS = { instant: 0, fast: 120, normal: 350, slow: 800 };
+const state = { cases: [], config: null, mode: "cases", selected: null, running: false,
+  baseSource: "", resubmitOf: null, baseDocs: [], form: null, runs: [], filter: "ALL", q: "", openRun: null };
+const ENTITY = [["private_limited", "Private Limited company"], ["public_limited", "Public Limited company"], ["llp", "LLP"],
+  ["partnership", "Partnership firm"], ["sole_proprietorship", "Sole proprietorship"], ["trust", "Trust"]];
+
+/* ============================ SSE ============================ */
+function parseSSE(block) {
+  let event = "message"; const data = [];
+  for (const line of block.split("\n")) {
+    if (line.startsWith(":")) continue;
+    if (line.startsWith("event:")) event = line.slice(6).trim();
+    else if (line.startsWith("data:")) data.push(line.slice(5).trim());
+  }
+  return data.length ? { event, data: JSON.parse(data.join("\n")) } : null;
+}
+async function streamRun(source, onMsg) {
+  const r = await fetch("/api/run", { method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ source }) });
+  if (!r.ok) {
+    let msg = "HTTP " + r.status; try { const j = await r.json(); msg = j.error || j.detail || msg; } catch (e) {}
+    throw new Error(msg);
+  }
+  const reader = r.body.getReader(), dec = new TextDecoder(); let buf = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    let i;
+    while ((i = buf.indexOf("\n\n")) >= 0) {
+      const block = buf.slice(0, i); buf = buf.slice(i + 2);
+      const m = parseSSE(block); if (m) onMsg(m.event, m.data);
+    }
+  }
+}
+
+/* ============================ live run view ============================ */
+const STAGES = [
+  ["intake", "Intake", "Receive the submission"],
+  ["resubmission", "Resubmission", "Compare with the earlier version", true],
+  ["completeness", "Completeness", "Required fields and documents"],
+  ["format", "Format checks", "PAN, GSTIN checksum, IFSC, account number"],
+  ["documents", "Document reading", "Classify and read each upload"],
+  ["crossref", "Cross-checks", "Form against documents"],
+  ["risk", "Risk checks", "Existing vendors and patterns"],
+  ["decision", "Decision", "Apply the rules"],
+  ["messages", "Messages", "Vendor email and internal note"],
+  ["commit", "Vendor records", "Add the approved vendor", true],
+];
+let cards = {}, t0 = {}, lastStage = null, slotBoxes = {};
+
+function ensureCard(id) {
+  if (cards[id]) return cards[id];
+  const idx = STAGES.findIndex(s => s[0] === id);
+  const def = STAGES[idx] || [id, id, ""];
+  const card = {
+    li: h("li", { class: "stage", "data-s": "waiting", "data-stage": id }),
+    ico: h("div", { class: "ico" }, h("span", {}, String(idx + 1))),
+    title: h("span", { class: "st-title" }, def[1]), time: h("span", { class: "st-time" }),
+    msg: h("div", { class: "st-msg" }, def[2]), body: h("div", { class: "st-body" }),
+  };
+  card.li.append(card.ico, h("div", {}, h("div", { class: "st-head" }, card.title, card.time), card.msg, card.body));
+  const list = $("#stages");
+  let before = null;
+  for (let j = idx + 1; j < STAGES.length && !before; j++) before = cards[STAGES[j][0]] && cards[STAGES[j][0]].li;
+  list.insertBefore(card.li, before);
+  return (cards[id] = card);
+}
+function setState(card, s) {
+  card.li.setAttribute("data-s", s);
+  const glyph = { done: "\u2714", warn: "!", error: "\u2718" }[s];
+  if (glyph) card.ico.replaceChildren(h("span", {}, glyph));
+}
+function rulesList(rules) {
+  return h("ul", { class: "rules" }, rules.map(r =>
+    h("li", { class: "rule r-" + r.status },
+      h("span", { class: "i" }, ICON[r.status] || "\u00b7"), h("span", { class: "id" }, r.rule_id),
+      h("span", {}, h("span", { class: "nm" }, r.name), h("span", { class: "dt" }, r.detail)))));
+}
+function kvTable(fields) {
+  const rows = Object.entries(fields || {}).filter(([, v]) => v !== null && v !== "" && v !== undefined);
+  return rows.length ? h("div", { class: "kv" }, rows.map(([k, v]) =>
+    h("div", {}, h("span", { class: "k" }, FIELD_NAMES[k] || k), h("span", { class: "v" }, String(v))))) : null;
+}
+function applyEvent(ev) {
+  if (ev.stage === "model") {
+    $("#runbanner").replaceChildren(h("div", { class: "banner" }, "\u23f3 " + ev.message));
+    if (lastStage && cards[lastStage]) cards[lastStage].body.append(h("div", { class: "note warn" }, ev.message));
+    return;
+  }
+  $("#runbanner").replaceChildren();
+  const card = ensureCard(ev.stage);
+  lastStage = ev.stage;
+  if (ev.status === "started") { t0[ev.stage] = ev.ts; setState(card, "running"); card.msg.textContent = ev.message; return; }
+  if (card.li.getAttribute("data-s") === "waiting") setState(card, "running");
+  if (ev.stage === "documents" && ev.data && ev.data.slot) return documentEvent(card, ev);
+  if (ev.status === "info") { card.msg.textContent = ev.message; return; }
+  card.msg.textContent = ev.message;
+  if (ev.data && ev.data.rules) card.body.append(rulesList(ev.data.rules));
+  setState(card, ev.status === "warn" ? "warn" : ev.status === "error" ? "error" : "done");
+  const start = t0[ev.stage]; if (start) card.time.textContent = (ev.ts - start).toFixed(1) + " s";
+}
+function documentEvent(card, ev) {
+  const slot = ev.data.slot;
+  let box = slotBoxes[slot];
+  if (!box) {
+    box = slotBoxes[slot] = { el: h("div", { class: "slotbox" }), head: h("div", { class: "sh" }, LABELS[slot] || slot), st: h("div", { class: "note" }), rules: h("div") };
+    box.el.append(box.head, box.st, box.rules); card.body.append(box.el);
+  }
+  const route = ev.data.route && ROUTE[ev.data.route];
+  if (route && !ev.data.rules) { box.head.append(h("span", { class: "badge " + route[1] }, route[0])); box.st.textContent = ev.message.replace(/^[^:]+:\s*/, ""); }
+  if (ev.data.rules) {
+    const bad = ev.data.rules.some(r => r.status === "FAIL");
+    box.st.textContent = bad ? "Problem found" : "Read and verified";
+    box.st.className = "note" + (bad ? " warn" : "");
+    box.rules.replaceChildren(rulesList(ev.data.rules));
+    const kv = kvTable(ev.data.fields); if (kv) box.rules.append(kv);
+  }
+}
+function resetRunView() {
+  cards = {}; t0 = {}; slotBoxes = {}; lastStage = null;
+  clear($("#stages")); $("#resultbox").replaceChildren(); $("#runbanner").replaceChildren();
+  STAGES.filter(s => !s[3]).forEach(s => ensureCard(s[0]));
+}
+
+/* playback: events are queued and shown at the chosen pace (cached runs would otherwise finish instantly) */
+const queue = []; let playing = false, drainWaiters = [];
+function enqueue(kind, data) { queue.push([kind, data]); if (!playing) pump(); }
+async function pump() {
+  playing = true;
+  while (queue.length) {
+    const [kind, data] = queue.shift();
+    if (kind === "event") { applyEvent(data); const d = SPEEDS[$("#speed").value] || 0; if (d) await sleep(d); }
+    else if (kind === "result") showResult(data);
+    else if (kind === "error") showError(data.message);
+  }
+  playing = false; drainWaiters.splice(0).forEach(f => f());
+}
+const drained = () => (!playing && !queue.length) ? Promise.resolve() : new Promise(r => drainWaiters.push(r));
+function showError(msg) {
+  $("#runbanner").replaceChildren(h("div", { class: "banner err" }, "\u2718 " + msg));
+  const c = lastStage && cards[lastStage]; if (c) setState(c, "error");
+}
+function showResult(res) {
+  Object.values(cards).forEach(c => { if (c.li.getAttribute("data-s") === "running") setState(c, "done"); });
+  $("#runmeta").textContent = res.submission_id + (res.version > 1 ? " \u00b7 v" + res.version : "");
+  $("#resultbox").replaceChildren(renderResult(res, { live: true }));
+  const rb = $("#resultbox"); if (rb.scrollIntoView) rb.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+async function runSource(source) {
+  if (state.running) return;
+  state.running = true; $("#runbtn").disabled = true; $("#runbtn").textContent = "Running...";
+  resetRunView(); $("#runmeta").textContent = "";
+  try {
+    await streamRun(source, enqueue);
+  } catch (e) { enqueue("error", { message: e.message }); }
+  await drained();
+  state.running = false; $("#runbtn").textContent = "Run process"; updateRunButton();
+}
+
+/* ============================ result rendering (live + dashboard) ============================ */
+function section(title, content, open) {
+  return h("details", { class: "sec", open: open ? "" : null }, h("summary", {}, title), h("div", { class: "in" }, content));
+}
+const STAGE_ORDER = ["completeness", "format", "documents", "crossref", "risk"];
+const STAGE_TITLE = { completeness: "Completeness", format: "Format checks", documents: "Document reading", crossref: "Cross-checks", risk: "Risk checks" };
+function renderResult(res, opts) {
+  opts = opts || {};
+  const d = res.decision, c = d.counts, wrap = h("div");
+  const dec = h("div", { class: "decision " + res.status.toLowerCase() },
+    h("div", { class: "big" }, res.status), h("div", { class: "hl" }, d.headline),
+    h("div", { class: "counts" }, [["total", "checks"], ["passed", "passed"], ["failed", "failed"], ["warnings", "warnings"], ["skipped", "skipped"]]
+      .map(([k, l]) => h("span", {}, c[k] + " " + l))));
+  if (res.status === "PENDING") dec.append(h("div", { class: "lbl" }, "What the vendor is asked to fix"), h("ol", {}, d.asks.map(a => h("li", {}, a))));
+  if (res.status === "REJECTED") dec.append(h("div", { class: "lbl" }, "Why (internal only, never shown to the vendor)"), h("ul", {}, d.blocking.map(b => h("li", {}, b.rule_id + ": " + b.detail))));
+  if (d.warnings.length) dec.append(h("div", { class: "lbl" }, "Noted, not blocking"), h("ul", {}, d.warnings.map(b => h("li", {}, b.rule_id + ": " + b.detail))));
+  wrap.append(dec);
+
+  if (res.changes) wrap.append(section("What changed since version " + res.changes.from_version, changesView(res.changes), true));
+
+  const v = res.messages.vendor, mailBox = h("div"), panes = {
+    "Email to vendor": () => h("div", { class: "mail" }, h("span", { class: "subj" }, "Subject: " + v.subject), v.body),
+    "Internal note": () => h("div", { class: "mail" }, res.messages.internal),
+  };
+  const tabs = h("div", { class: "tabs", role: "tablist" });
+  const show = name => { mailBox.replaceChildren(panes[name]()); [...tabs.children].forEach(b => b.setAttribute("aria-selected", String(b.textContent === name))); };
+  Object.keys(panes).forEach(n => tabs.append(h("button", { role: "tab", onclick: () => show(n) }, n)));
+  show("Email to vendor");
+  wrap.append(section("Messages (" + (v.source === "llm" ? "greeting written by the model" : "template") + ")", h("div", {}, tabs, mailBox), true));
+
+  const docs = h("div", { class: "docs" });
+  for (const slot of SLOTS) {
+    const e = res.documents[slot]; if (!e) continue;
+    const route = e.reused ? ROUTE.reused : ROUTE[e.route] || ["", "b-neutral"];
+    const thumb = h("img", { alt: LABELS[slot], loading: "lazy", src: "/api/source/doc?source=" + encodeURIComponent(res.source || "") + "&slot=" + slot });
+    thumb.addEventListener("error", () => thumb.replaceWith(h("a", { class: "pdfbox", target: "_blank", rel: "noopener", href: thumb.src }, "PDF \u00b7 open")));
+    const fails = e.rules.filter(r => r.status === "FAIL");
+    docs.append(h("div", { class: "doc" }, res.source ? thumb : null,
+      h("div", { class: "row", style: "margin-top:8px" }, h("b", {}, LABELS[slot]), h("span", { class: "badge " + route[1] }, route[0])),
+      fails.length ? h("div", { class: "note warn" }, fails.map(r => r.detail).join(" ")) : null,
+      kvTable(e.extraction && e.extraction.fields)));
+  }
+  wrap.append(section("Documents and what was read from them", docs, false));
+
+  const groups = h("div");
+  for (const st of STAGE_ORDER) {
+    const rs = res.rules.filter(r => r.stage === st); if (!rs.length) continue;
+    const bad = rs.filter(r => r.status === "FAIL").length;
+    groups.append(h("h3", { style: "margin-top:12px" }, STAGE_TITLE[st] + " \u00b7 " + rs.length + " checks" + (bad ? " \u00b7 " + bad + " failed" : "")), rulesList(rs));
+  }
+  wrap.append(section("All " + res.rules.length + " checks", groups, !opts.live));
+  return wrap;
+}
+function changesView(c) {
+  const li = (t, rows) => rows.length ? h("li", {}, h("b", {}, t + ": "), rows.map(r => r.rule_id + " " + r.name).join("; ")) : null;
+  return h("div", {},
+    h("p", { style: "margin:0 0 8px" }, badge(c.status_before), " \u2192 ", badge(c.status_after)),
+    h("ul", { class: "chg" },
+      c.documents_changed.length ? h("li", {}, h("b", {}, "Files the vendor changed: "), c.documents_changed.map(s => LABELS[s] || s).join(", ")) : null,
+      c.documents_unchanged.length ? h("li", {}, h("b", {}, "Re-sent unchanged (not read again): "), c.documents_unchanged.map(s => LABELS[s] || s).join(", ")) : null,
+      c.form_fields_changed.map(f => h("li", {}, h("b", {}, "Form field " + f.field + ": "), String(f.old) + " \u2192 " + String(f.new))),
+      li("Problems fixed", c.resolved), li("Checks that became possible", c.newly_checkable),
+      li("New problems", c.regressed), li("Still failing", c.still_failing)));
+}
+
+/* ============================ input panel ============================ */
+function renderCases() {
+  const box = clear($("#caselist"));
+  state.cases.forEach(c => box.append(h("button", { class: "case", "aria-pressed": String(state.selected === c.source),
+    onclick: () => { state.selected = c.source; renderCases(); updateRunButton(); } },
+    h("div", { class: "row", style: "justify-content:space-between" }, h("span", { class: "t" }, c.vendor), h("span", { class: "badge b-neutral" }, c.submission_id + (c.version > 1 ? " \u00b7 v" + c.version : ""))),
+    h("div", { class: "d" }, c.why || c.name))));
+}
+function blankForm() {
+  return { company: { vendor_name: "", entity_type: "private_limited", address: { line1: "", city: "", state: "", pincode: "" },
+    contact: { name: "", email: "", phone: "" } }, tax: { pan: "", gstin: "" },
+    bank: { account_holder_name: "", account_number: "", ifsc: "", bank_name: "" }, cin: "", proprietor_name: "" };
+}
+const FIELDS = [
+  ["Business", [["company.vendor_name", "Vendor / business name"], ["company.entity_type", "Business type", "entity"], ["cin", "CIN / LLPIN (companies, LLPs)"], ["proprietor_name", "Proprietor name (sole proprietorship)"]]],
+  ["Address", [["company.address.line1", "Address line 1"], ["company.address.city", "City"], ["company.address.state", "State"], ["company.address.pincode", "Pincode"]]],
+  ["Contact", [["company.contact.name", "Contact person"], ["company.contact.email", "Email"], ["company.contact.phone", "Phone"]]],
+  ["Tax", [["tax.pan", "PAN"], ["tax.gstin", "GSTIN"]]],
+  ["Bank", [["bank.account_holder_name", "Account holder name"], ["bank.account_number", "Account number"], ["bank.ifsc", "IFSC"], ["bank.bank_name", "Bank name"]]],
+];
+const getPath = (o, p) => p.split(".").reduce((a, k) => (a == null ? a : a[k]), o);
+function setPath(o, p, v) { const ks = p.split("."); let a = o; ks.slice(0, -1).forEach(k => a = a[k] = a[k] || {}); a[ks[ks.length - 1]] = v; }
+
+function renderCustom() {
+  const pane = clear($("#custom-pane"));
+  if (!state.form) state.form = blankForm();
+  const start = h("select", { id: "startfrom", onchange: async e => {
+    if (!e.target.value) { state.form = blankForm(); state.baseSource = ""; state.baseDocs = []; state.resubmitOf = null; return renderCustom(); }
+    await loadBase(e.target.value, null);
+  } }, h("option", { value: "" }, "Blank form"), state.cases.map(c => h("option", { value: c.source, selected: state.baseSource === c.source ? "" : null }, c.vendor)));
+  pane.append(h("label", { class: "f" }, "Start from", start));
+  if (state.resubmitOf) pane.append(h("div", { class: "chip" }, "Resubmitting " + state.resubmitOf + ": a new version will be created and compared with the last one"));
+  FIELDS.forEach(([title, fs]) => {
+    pane.append(h("h3", { style: "margin-top:14px" }, title));
+    const g = h("div", { class: "two" });
+    fs.forEach(([path, label, kind]) => {
+      const val = getPath(state.form, path) || "";
+      const input = kind === "entity"
+        ? h("select", { name: path }, ENTITY.map(([v, l]) => h("option", { value: v, selected: v === val ? "" : null }, l)))
+        : h("input", { name: path, value: val, autocomplete: "off" });
+      input.addEventListener("input", () => setPath(state.form, path, input.value));
+      input.addEventListener("change", () => setPath(state.form, path, input.value));
+      g.append(h("label", { class: "f" }, label, input));
+    });
+    pane.append(g);
+  });
+  pane.append(h("h3", { style: "margin-top:14px" }, "Documents (PDF, JPG or PNG, up to " + (state.config ? state.config.max_upload_mb : 8) + " MB)"));
+  SLOTS.forEach(slot => {
+    const base = state.baseDocs.find(d => d.slot === slot);
+    pane.append(h("div", { class: "fileline" },
+      h("div", {}, h("span", { class: "nm" }, LABELS[slot]), " ", base ? h("small", {}, "\u2014 using the file from the starting submission (" + base.file + ")") : h("small", {}, "\u2014 none attached")),
+      h("input", { type: "file", name: slot, accept: ".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*" })));
+  });
+}
+async function loadBase(source, resubmitOf) {
+  const f = await api("/api/source/form?source=" + encodeURIComponent(source));
+  state.form = Object.assign(blankForm(), f.form);
+  state.form.company = Object.assign(blankForm().company, f.form.company);
+  state.baseSource = source; state.baseDocs = f.documents; state.resubmitOf = resubmitOf || null;
+  renderCustom();
+}
+async function submitCustom() {
+  const fd = new FormData();
+  const sub = JSON.parse(JSON.stringify(state.form));
+  if (state.resubmitOf) sub.submission_id = state.resubmitOf;
+  fd.append("submission", JSON.stringify(sub));
+  fd.append("base_source", state.baseSource || "");
+  $("#custom-pane").querySelectorAll("input[type=file]").forEach(i => { if (i.files && i.files[0]) fd.append(i.name, i.files[0]); });
+  return api("/api/uploads", { method: "POST", body: fd });
+}
+function updateRunButton() {
+  const b = $("#runbtn"), ok = state.config && state.config.ready;
+  b.disabled = state.running || !ok || (state.mode === "cases" && !state.selected);
+  $("#runhint").textContent = !ok ? "The server has no model key configured, so runs are disabled."
+    : state.mode === "cases" && !state.selected ? "Choose a test case to run." : "";
+}
+function setMode(m) {
+  state.mode = m;
+  $("#mode-cases").setAttribute("aria-pressed", String(m === "cases")); $("#mode-custom").setAttribute("aria-pressed", String(m === "custom"));
+  $("#cases-pane").classList.toggle("hidden", m !== "cases"); $("#custom-pane").classList.toggle("hidden", m !== "custom");
+  if (m === "custom") renderCustom();
+  updateRunButton();
+}
+
+/* ============================ dashboard ============================ */
+async function loadRuns() { state.runs = await api("/api/runs"); renderDash(); }
+function renderDash() {
+  const rs = state.runs, n = s => rs.filter(r => r.status === s).length;
+  $("#stats").replaceChildren(
+    ...[["Total runs", rs.length], ["Approved", n("APPROVED")], ["Pending", n("PENDING")], ["Rejected", n("REJECTED")],
+      ["Resubmissions", rs.filter(r => r.version > 1).length]].map(([l, v]) => h("div", { class: "stat" }, h("div", { class: "n" }, v), h("div", { class: "l" }, l))));
+  const q = state.q.toLowerCase();
+  const rows = rs.filter(r => (state.filter === "ALL" || r.status === state.filter) &&
+    (!q || (r.vendor_name + " " + r.submission_id).toLowerCase().includes(q)));
+  const tb = clear($("#runs"));
+  rows.forEach(r => tb.append(h("tr", { tabindex: "0", "aria-selected": String(state.openRun === r.run_id), onclick: () => openRun(r.run_id),
+    onkeydown: e => { if (e.key === "Enter") openRun(r.run_id); } },
+    h("td", { class: "mono" }, "#" + r.run_id), h("td", { class: "mono" }, r.submission_id), h("td", {}, "v" + r.version),
+    h("td", {}, r.vendor_name), h("td", {}, badge(r.status)), h("td", {}, r.headline), h("td", { class: "note" }, fmtTime(r.created_at)))));
+  $("#noruns").classList.toggle("hidden", rows.length > 0);
+  if (!rs.length) $("#noruns").replaceChildren("No runs yet. Go to ", h("a", { href: "#/run" }, "Run"), " and process a test case; it will appear here.");
+  else if (!rows.length) $("#noruns").textContent = "No runs match this filter.";
+}
+async function openRun(id, silent) {
+  state.openRun = id; if (!silent) history.replaceState(null, "", "#/dashboard/" + id);
+  renderDash();
+  const box = clear($("#detail")); box.append(h("div", { class: "card note" }, "Loading run #" + id + "..."));
+  try {
+    const res = await api("/api/runs/" + id);
+    const versions = state.runs.some(r => r.submission_id === res.submission_id && r.version !== res.version)
+      ? await api("/api/submissions/" + encodeURIComponent(res.submission_id)).catch(() => []) : [];
+    const head = h("div", { class: "row", style: "justify-content:space-between;margin-bottom:12px" },
+      h("div", {}, h("h2", { style: "margin:0" }, res.vendor_name), h("div", { class: "note" }, res.submission_id + " \u00b7 version " + res.version + " \u00b7 run #" + id)),
+      h("div", { class: "row" },
+        res.source && res.source.startsWith("case:") ? h("button", { class: "btn small", onclick: () => rerun(res) }, "Run again") : null,
+        res.source ? h("button", { class: "btn small primary", onclick: () => startResubmit(res) }, "Resubmit with changes") : null));
+    const card = h("div", { class: "card" }, head);
+    if (versions.length > 1) card.append(h("div", { class: "note" }, "All versions of this submission:"),
+      h("div", { class: "vers" }, versions.map(v => { const row = state.runs.find(r => r.submission_id === res.submission_id && r.version === v.version);
+        return h("button", { class: "btn small", onclick: () => row && openRun(row.run_id) }, "v" + v.version + " \u00b7 " + v.status); })));
+    card.append(renderResult(res, { live: false }));
+    box.replaceChildren(card);
+  } catch (e) { box.replaceChildren(h("div", { class: "banner err" }, e.message)); }
+}
+function rerun(res) { location.hash = "#/run"; setMode("cases"); state.selected = res.source; renderCases(); updateRunButton(); }
+async function startResubmit(res) {
+  location.hash = "#/run"; setMode("custom");
+  await loadBase(res.source, res.submission_id);
+  state.form = Object.assign(blankForm(), res.form); state.form.company = Object.assign(blankForm().company, res.form.company);
+  renderCustom();
+}
+
+/* ============================ routing + boot ============================ */
+function route() {
+  const hash = location.hash || "#/run";
+  const dash = hash.startsWith("#/dashboard");
+  $("#page-run").classList.toggle("hidden", dash); $("#page-dash").classList.toggle("hidden", !dash);
+  $("#nav-run").removeAttribute("aria-current"); $("#nav-dash").removeAttribute("aria-current");
+  (dash ? $("#nav-dash") : $("#nav-run")).setAttribute("aria-current", "page");
+  if (dash) { const m = hash.match(/^#\/dashboard\/(\d+)/); loadRuns().then(() => m && openRun(Number(m[1]), true)).catch(() => {}); }
+}
+async function boot() {
+  $("#mode-cases").onclick = () => setMode("cases"); $("#mode-custom").onclick = () => setMode("custom");
+  $("#refresh").onclick = () => loadRuns();
+  $("#q").addEventListener("input", e => { state.q = e.target.value; renderDash(); });
+  document.querySelectorAll(".fchip").forEach(b => b.onclick = () => {
+    state.filter = b.dataset.f; document.querySelectorAll(".fchip").forEach(x => x.setAttribute("aria-pressed", String(x === b))); renderDash(); });
+  try { const s = localStorage.getItem("speed"); if (s && SPEEDS[s] !== undefined) $("#speed").value = s; } catch (e) {}
+  $("#speed").onchange = () => { try { localStorage.setItem("speed", $("#speed").value); } catch (e) {} };
+  $("#runbtn").onclick = async () => {
+    try {
+      if (state.mode === "cases") return runSource(state.selected);
+      $("#runbtn").disabled = true; $("#runbtn").textContent = "Preparing...";
+      const up = await submitCustom();
+      state.resubmitOf = null; $("#runbtn").textContent = "Run process";
+      await runSource(up.source);
+    } catch (e) { resetRunView(); showError(e.message); $("#runbtn").textContent = "Run process"; updateRunButton(); }
+  };
+  window.addEventListener("hashchange", route);
+  resetRunView();
+  try {
+    [state.config, state.cases] = await Promise.all([api("/api/config"), api("/api/cases")]);
+    const cfg = state.config;
+    $("#modeltext").textContent = cfg.ready ? (cfg.provider === "gemini" ? "Gemini \u00b7 " + cfg.model : cfg.provider) + (cfg.cache ? " \u00b7 cache on" : "") : "No model key configured";
+    $("#modeldot").className = "dot " + (cfg.ready ? "on" : "off");
+  } catch (e) { $("#modeltext").textContent = "Server unreachable"; $("#modeldot").className = "dot off"; }
+  renderCases(); updateRunButton(); route();
+}
+boot();
+</script>
+</body>
+</html>

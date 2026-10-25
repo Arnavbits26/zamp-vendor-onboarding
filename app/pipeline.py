@@ -30,7 +30,7 @@ def stage_of(rule_id: str) -> str:
 
 def run_submission(case_dir: str | Path, reader, master: list[dict] | None = None,
                    log: RunLog | None = None, use_llm_email: bool = True,
-                   store: Store | None = None) -> dict:
+                   store: Store | None = None, source: str | None = None) -> dict:
     log = log or RunLog()
     master = list(master if master is not None else load_vendor_master())
 
@@ -80,7 +80,7 @@ def run_submission(case_dir: str | Path, reader, master: list[dict] | None = Non
     log.emit("messages", "done", f"Vendor email drafted ({vendor['source']}) and internal note written")
 
     result = {
-        "submission_id": sub.get("submission_id"), "version": version,
+        "submission_id": sub.get("submission_id"), "version": version, "source": source,
         "vendor_name": sub["company"]["vendor_name"], "entity_type": sub["company"].get("entity_type"),
         "status": decision.status, "headline": decision.headline, "decision": d,
         "rules": [{**r.to_dict(), "stage": stage_of(r.rule_id)} for r in rules],
