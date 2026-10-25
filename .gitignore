@@ -6,3 +6,7 @@ __pycache__/
 data/cache/
 out.json
 runs.json
+runs.json
+run_log.txt
+case_log.txt
+data/runs.db
