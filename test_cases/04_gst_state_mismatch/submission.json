@@ -1,0 +1,42 @@
+{
+  "submission_id": "SUB-1004",
+  "company": {
+    "vendor_name": "Deccan Logistics LLP",
+    "entity_type": "llp",
+    "address": {
+      "line1": "Unit 5, Chakan MIDC, Phase 2",
+      "city": "Pune",
+      "state": "Maharashtra",
+      "pincode": "410501"
+    },
+    "contact": {
+      "name": "Meera Kulkarni",
+      "email": "vendor@deccanlogistics.in",
+      "phone": "+91 99230 77861"
+    }
+  },
+  "tax": {
+    "pan": "AAMFD6621L",
+    "gstin": "29AAMFD6621L1ZZ"
+  },
+  "bank": {
+    "account_holder_name": "Deccan Logistics LLP",
+    "account_number": "922020034417781",
+    "ifsc": "UTIB0000789",
+    "bank_name": "Axis Bank"
+  },
+  "cin": "AAQ-4471",
+  "incorporated_on": "2020-11-09",
+  "gst_registered_address": {
+    "line1": "No. 18, Hosur Road, Electronic City",
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "pincode": "560100"
+  },
+  "documents": {
+    "gst_certificate": "docs/gst_certificate.pdf",
+    "pan_card": "docs/pan_card.jpg",
+    "cancelled_cheque": "docs/cancelled_cheque.jpg",
+    "certificate_of_incorporation": "docs/certificate_of_incorporation.pdf"
+  }
+}

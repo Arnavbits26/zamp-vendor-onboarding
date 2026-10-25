@@ -1,0 +1,8 @@
+reportlab>=4.0
+pillow>=10.0
+pypdfium2>=4.0
+google-genai>=1.0
+python-dotenv>=1.0
+pytest>=8.0
+# optional, only if LLM_PROVIDER=anthropic:
+# anthropic>=0.40

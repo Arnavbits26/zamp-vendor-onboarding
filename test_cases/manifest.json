@@ -1,0 +1,44 @@
+[
+  {
+    "case": "01_happy_path",
+    "submission_id": "SUB-1001",
+    "vendor": "Kavya Packaging Solutions Pvt Ltd",
+    "expected_outcome": "APPROVED",
+    "why": "Clean private limited company; every field and document agrees."
+  },
+  {
+    "case": "02_trade_name_vs_legal_name",
+    "submission_id": "SUB-1002",
+    "vendor": "Sharma Electricals",
+    "expected_outcome": "APPROVED",
+    "why": "Form says 'Sharma Electricals', bank says 'Rajesh Sharma'. Looks like a mismatch, but the GST certificate links the trade name to the proprietor and the PAN is an individual's (4th char P)."
+  },
+  {
+    "case": "03_bank_account_reused",
+    "submission_id": "SUB-1003",
+    "vendor": "Nexora Tech Supplies Pvt Ltd",
+    "expected_outcome": "REJECTED",
+    "why": "Every field and document is valid on its own, but the bank account already belongs to existing vendor V-0001 (Orbit Office Solutions). Classic payment-fraud pattern: escalate internally, neutral message to vendor."
+  },
+  {
+    "case": "04_gst_state_mismatch",
+    "submission_id": "SUB-1004",
+    "vendor": "Deccan Logistics LLP",
+    "expected_outcome": "PENDING",
+    "why": "GSTIN is registered in Karnataka (29) but the billing address is in Pune, Maharashtra. Not fraud by default: businesses hold one GSTIN per state. Ask for the Maharashtra GSTIN or a confirmed Karnataka billing address."
+  },
+  {
+    "case": "05a_wrong_document",
+    "submission_id": "SUB-1005",
+    "vendor": "Greenleaf Facility Services Pvt Ltd",
+    "expected_outcome": "PENDING",
+    "why": "PAN card uploaded in the GST certificate slot. Document classification catches it; vendor is asked for exactly that one document."
+  },
+  {
+    "case": "05b_wrong_document_resubmitted",
+    "submission_id": "SUB-1005",
+    "vendor": "Greenleaf Facility Services Pvt Ltd",
+    "expected_outcome": "APPROVED",
+    "why": "Same vendor resubmits with the correct GST certificate. Only the failed check needs to re-run; outcome moves PENDING -> APPROVED."
+  }
+]

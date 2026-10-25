@@ -1,0 +1,7 @@
+__pycache__/
+.DS_Store
+.env
+.pytest_cache/
+.venv/
+data/cache/
+out.json

@@ -1,0 +1,38 @@
+{
+  "submission_id": "SUB-1005",
+  "version": 2,
+  "resubmission_of": "SUB-1005",
+  "company": {
+    "vendor_name": "Greenleaf Facility Services Pvt Ltd",
+    "entity_type": "private_limited",
+    "address": {
+      "line1": "402, Raheja Plaza, LBS Marg, Ghatkopar West",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "pincode": "400086"
+    },
+    "contact": {
+      "name": "Farhan Qureshi",
+      "email": "onboarding@greenleaffs.com",
+      "phone": "+91 98200 63318"
+    }
+  },
+  "tax": {
+    "pan": "AAJCG5508H",
+    "gstin": "27AAJCG5508H1ZI"
+  },
+  "bank": {
+    "account_holder_name": "Greenleaf Facility Services Pvt Ltd",
+    "account_number": "1834002100056712",
+    "ifsc": "PUNB0183400",
+    "bank_name": "Punjab National Bank"
+  },
+  "cin": "U74999MH2018PTC312090",
+  "incorporated_on": "2018-08-21",
+  "documents": {
+    "gst_certificate": "docs/gst_certificate.pdf",
+    "pan_card": "docs/pan_card.jpg",
+    "cancelled_cheque": "docs/cancelled_cheque.jpg",
+    "certificate_of_incorporation": "docs/certificate_of_incorporation.pdf"
+  }
+}

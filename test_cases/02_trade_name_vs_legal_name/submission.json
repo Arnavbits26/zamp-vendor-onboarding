@@ -1,0 +1,34 @@
+{
+  "submission_id": "SUB-1002",
+  "company": {
+    "vendor_name": "Sharma Electricals",
+    "entity_type": "sole_proprietorship",
+    "address": {
+      "line1": "Shop 7, Main Road, near Albert Ekka Chowk",
+      "city": "Ranchi",
+      "state": "Jharkhand",
+      "pincode": "834001"
+    },
+    "contact": {
+      "name": "Rajesh Sharma",
+      "email": "sharmaelectricals.rnc@gmail.com",
+      "phone": "+91 94311 56720"
+    }
+  },
+  "tax": {
+    "pan": "BQRPS7712D",
+    "gstin": "20BQRPS7712D1ZT"
+  },
+  "bank": {
+    "account_holder_name": "Rajesh Sharma",
+    "account_number": "33872910456",
+    "ifsc": "SBIN0000167",
+    "bank_name": "State Bank of India"
+  },
+  "proprietor_name": "Rajesh Sharma",
+  "documents": {
+    "gst_certificate": "docs/gst_certificate.pdf",
+    "pan_card": "docs/pan_card.jpg",
+    "cancelled_cheque": "docs/cancelled_cheque.jpg"
+  }
+}

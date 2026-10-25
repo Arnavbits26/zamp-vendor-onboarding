@@ -1,0 +1,74 @@
+[
+  {
+    "vendor_id": "V-0001",
+    "legal_name": "Orbit Office Solutions Pvt Ltd",
+    "pan": "AAHCO2219K",
+    "ifsc": "ICIC0000456",
+    "account_number": "045601503321",
+    "gstin": "07AAHCO2219K1ZD",
+    "status": "approved"
+  },
+  {
+    "vendor_id": "V-0002",
+    "legal_name": "Bluepeak Cleaning Services LLP",
+    "pan": "AAEFB4410R",
+    "ifsc": "HDFC0001187",
+    "account_number": "50200011872245",
+    "gstin": "29AAEFB4410R1Z6",
+    "status": "approved"
+  },
+  {
+    "vendor_id": "V-0003",
+    "legal_name": "Sunrise Stationers",
+    "pan": "CKLPM5521A",
+    "ifsc": "SBIN0007712",
+    "account_number": "38110045672",
+    "gstin": "20CKLPM5521A1ZR",
+    "status": "approved"
+  },
+  {
+    "vendor_id": "V-0004",
+    "legal_name": "Metroline Courier Pvt Ltd",
+    "pan": "AABCM8813P",
+    "ifsc": "UTIB0000310",
+    "account_number": "917020044518823",
+    "gstin": "27AABCM8813P1ZX",
+    "status": "approved"
+  },
+  {
+    "vendor_id": "V-0005",
+    "legal_name": "Coastal IT Hardware Pvt Ltd",
+    "pan": "AADCC3348F",
+    "ifsc": "KKBK0007801",
+    "account_number": "7811230045",
+    "gstin": "33AADCC3348F1Z1",
+    "status": "approved"
+  },
+  {
+    "vendor_id": "V-0006",
+    "legal_name": "Vertex Security Agency",
+    "pan": "BNVPK6630J",
+    "ifsc": "BARB0BANJAR",
+    "account_number": "26450100009934",
+    "gstin": "36BNVPK6630J1ZE",
+    "status": "approved"
+  },
+  {
+    "vendor_id": "V-0007",
+    "legal_name": "Harbor Catering Co LLP",
+    "pan": "AAIFH7720C",
+    "ifsc": "YESB0000221",
+    "account_number": "022163400001298",
+    "gstin": "27AAIFH7720C1ZK",
+    "status": "approved"
+  },
+  {
+    "vendor_id": "V-0008",
+    "legal_name": "Pinnacle Print House Pvt Ltd",
+    "pan": "AAGCP1904E",
+    "ifsc": "CNRB0002651",
+    "account_number": "2651101004418",
+    "gstin": "29AAGCP1904E1ZM",
+    "status": "approved"
+  }
+]

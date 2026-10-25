@@ -1,0 +1,36 @@
+{
+  "submission_id": "SUB-1003",
+  "company": {
+    "vendor_name": "Nexora Tech Supplies Pvt Ltd",
+    "entity_type": "private_limited",
+    "address": {
+      "line1": "B-118, Okhla Industrial Estate, Phase 1",
+      "city": "New Delhi",
+      "state": "Delhi",
+      "pincode": "110020"
+    },
+    "contact": {
+      "name": "Vikram Batra",
+      "email": "procure@nexoratech.co.in",
+      "phone": "+91 98110 44129"
+    }
+  },
+  "tax": {
+    "pan": "AAFCN3390Q",
+    "gstin": "07AAFCN3390Q1ZU"
+  },
+  "bank": {
+    "account_holder_name": "Nexora Tech Supplies Pvt Ltd",
+    "account_number": "045601503321",
+    "ifsc": "ICIC0000456",
+    "bank_name": "ICICI Bank"
+  },
+  "cin": "U51909DL2022PTC398112",
+  "incorporated_on": "2022-06-02",
+  "documents": {
+    "gst_certificate": "docs/gst_certificate.pdf",
+    "pan_card": "docs/pan_card.jpg",
+    "cancelled_cheque": "docs/cancelled_cheque.jpg",
+    "certificate_of_incorporation": "docs/certificate_of_incorporation.pdf"
+  }
+}

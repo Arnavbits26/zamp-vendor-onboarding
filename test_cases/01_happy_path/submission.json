@@ -1,0 +1,36 @@
+{
+  "submission_id": "SUB-1001",
+  "company": {
+    "vendor_name": "Kavya Packaging Solutions Pvt Ltd",
+    "entity_type": "private_limited",
+    "address": {
+      "line1": "Plot 42, Peenya Industrial Area, Phase 2",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "pincode": "560058"
+    },
+    "contact": {
+      "name": "Ananya Rao",
+      "email": "accounts@kavyapackaging.in",
+      "phone": "+91 98450 21344"
+    }
+  },
+  "tax": {
+    "pan": "AAKCK4821M",
+    "gstin": "29AAKCK4821M1Z0"
+  },
+  "bank": {
+    "account_holder_name": "Kavya Packaging Solutions Pvt Ltd",
+    "account_number": "50200078453219",
+    "ifsc": "HDFC0004521",
+    "bank_name": "HDFC Bank"
+  },
+  "cin": "U25202KA2019PTC124587",
+  "incorporated_on": "2019-03-14",
+  "documents": {
+    "gst_certificate": "docs/gst_certificate.pdf",
+    "pan_card": "docs/pan_card.jpg",
+    "cancelled_cheque": "docs/cancelled_cheque.jpg",
+    "certificate_of_incorporation": "docs/certificate_of_incorporation.pdf"
+  }
+}
