@@ -168,6 +168,12 @@ class ClaudeReader:
                 return coerce_extraction(block.input)
         raise ExtractionError("Model did not return a structured document record.")
 
+    def draft(self, system: str, prompt: str) -> str:
+        resp = self.client.messages.create(
+            model=self.model, max_tokens=700, system=system,
+            messages=[{"role": "user", "content": prompt}])
+        return "".join(getattr(b, "text", "") for b in resp.content).strip()
+
 
 # ---------------------------------------------------------------- Gemini (free tier)
 _TYPE_HELP = RECORD_TOOL["input_schema"]["properties"]["doc_type"]["description"]
@@ -269,22 +275,8 @@ class GeminiReader:
             self._client = genai.Client(api_key=key)
         return self._client
 
-    def read(self, *, route: str, text: str | None = None,
-             image: bytes | None = None, media_type: str = "image/jpeg") -> dict:
-        from google.genai import types
-        if route == "vision":
-            if not image:
-                raise ExtractionError("vision route needs image bytes")
-            parts = [types.Part.from_bytes(data=image, mime_type=media_type)]
-        elif route == "text":
-            parts = [f"<document_text>\n{text}\n</document_text>"]
-        else:
-            raise ExtractionError(f"unknown route {route!r}")
-        parts.append("Classify this document and record its fields.\n\n" + GEMINI_JSON_SHAPE)
-
-        config = types.GenerateContentConfig(
-            system_instruction=SYSTEM, response_mime_type="application/json", temperature=0)
-
+    def _run(self, parts, config):
+        """Try the main model, then the backup. Returns the raw response or raises ExtractionError."""
         models = [self.model]
         if self.fallback_model and self.fallback_model != self.model:
             models.append(self.fallback_model)
@@ -310,6 +302,32 @@ class GeminiReader:
                 "Free-tier quota reached for this model. Wait a few minutes (per-minute limit) "
                 "or until tomorrow (daily limit), or set GEMINI_MODEL to a Flash-Lite model, "
                 "which has a larger daily allowance.") from last.cause
+        return resp
+
+    def draft(self, system: str, prompt: str) -> str:
+        """Plain-text generation (used for drafting emails). Same retry/backup logic as read()."""
+        from google.genai import types
+        config = types.GenerateContentConfig(system_instruction=system, temperature=0.3)
+        resp = self._run([prompt], config)
+        return (getattr(resp, "text", "") or "").strip()
+
+    def read(self, *, route: str, text: str | None = None,
+             image: bytes | None = None, media_type: str = "image/jpeg") -> dict:
+        from google.genai import types
+        if route == "vision":
+            if not image:
+                raise ExtractionError("vision route needs image bytes")
+            parts = [types.Part.from_bytes(data=image, mime_type=media_type)]
+        elif route == "text":
+            parts = [f"<document_text>\n{text}\n</document_text>"]
+        else:
+            raise ExtractionError(f"unknown route {route!r}")
+        parts.append("Classify this document and record its fields.\n\n" + GEMINI_JSON_SHAPE)
+
+        config = types.GenerateContentConfig(
+            system_instruction=SYSTEM, response_mime_type="application/json", temperature=0)
+
+        resp = self._run(parts, config)
 
         try:
             return coerce_extraction(_parse_json(getattr(resp, "text", "") or ""))
@@ -339,6 +357,16 @@ class CachedReader:
             return json.loads(f.read_text())
         out = self.inner.read(route=route, text=text, image=image, media_type=media_type)
         f.write_text(json.dumps(out))
+        return out
+
+    def draft(self, system: str, prompt: str) -> str:
+        h = hashlib.sha256(f"{self.model}|draft|{system}|{prompt}".encode()).hexdigest()[:32]
+        f = self.dir / f"{h}.txt"
+        if f.exists():
+            self.hits += 1
+            return f.read_text()
+        out = self.inner.draft(system, prompt)
+        f.write_text(out)
         return out
 
 

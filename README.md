@@ -5,7 +5,7 @@ Takes a vendor submission (form data + documents) and returns **APPROVED / PENDI
 ## Status
 - [x] Day 2 — test data, specimen documents, format validators (+ tests)
 - [x] Day 3 — intake, completeness checks, document classification & extraction (Claude)
-- [ ] Day 4 — cross-reference + risk checks, decision engine, message drafting
+- [x] Day 4 — cross-reference + risk checks, decision engine, message drafting
 - [ ] Day 5 — edge cases end-to-end, resubmission loop
 - [ ] Day 6 — UI (live run view + dashboard), deploy
 - [ ] Day 7 — demo prep, video, submit
@@ -23,6 +23,12 @@ python -m pytest -q
 ```bash
 python -m app.run_stage3 test_cases/01_happy_path
 python -m app.run_stage3 --all --json out.json
+```
+
+## Run the whole process (Day 4)
+```bash
+python -m app.run_pipeline test_cases/04_gst_state_mismatch
+python -m app.run_pipeline --all          # runs all six and prints a scoreboard
 ```
 
 ## Test cases

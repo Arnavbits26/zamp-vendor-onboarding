@@ -31,7 +31,7 @@ class RateLimit(Exception):
 
 
 def reader(replies, sleeps=None):
-    return GeminiReader(client=FakeGemini(replies), model="test-model",
+    return GeminiReader(client=FakeGemini(replies), model="test-model", fallback_model=None,
                         sleep=(sleeps.append if sleeps is not None else lambda s: None))
 
 
@@ -143,7 +143,7 @@ def test_cache_sends_each_input_once(tmp_path):
 def test_cache_key_includes_model(tmp_path):
     a = CachedReader(reader([GOOD]), cache_dir=tmp_path)
     a.read(route="text", text="same")
-    other = GeminiReader(client=FakeGemini([GOOD]), model="other-model")
+    other = GeminiReader(client=FakeGemini([GOOD]), model="other-model", fallback_model=None)
     b = CachedReader(other, cache_dir=tmp_path)
     b.read(route="text", text="same")
     assert len(other.client.calls) == 1             # different model -> not a cache hit

@@ -38,6 +38,15 @@ Names are compared after normalising case, punctuation and company suffixes ("Pv
 ## Resubmission
 A resubmission keeps the same submission ID with a new version number. The whole pipeline re-runs (simplest way to guarantee nothing stale is trusted), and the UI highlights which checks changed between versions.
 
+## Decision policy (the core judgement)
+- **Missing or fixable information -> PENDING.** Typos, wrong or unreadable files, a state mismatch: a genuine vendor can fix these, so they get a precise list of what to send.
+- **Contradictory identity information -> REJECTED.** Bank account already used by another vendor, GSTIN already onboarded, PAN belonging to an unrelated business, or three or more separate inconsistencies (each could be a typo; together they suggest the documents don't belong to one business).
+- **Warnings never block.** Free email on a company, a small spelling difference, same PAN as an existing vendor with the same name (likely an extra state registration).
+- **A check that can't run is SKIPPED, not failed.** If the GST certificate is the wrong file, everything that depends on it is skipped; the vendor is asked for that one document, not blamed for five things.
+- **Sole proprietors may bank in their own name** only when the GST certificate ties the trade name to that person and the PAN is an individual's. A company never may.
+- **Messages:** vendor asks are fixed, vendor-safe wording written by code. The model only writes a friendly greeting and sign-off for PENDING emails (with a template fallback). REJECTED emails are a fixed template: no model, no reasons.
+- Name matching ignores case, punctuation, word order and company suffixes ("Pvt Ltd" = "Private Limited"); one-letter typos count as 'close' (a warning), anything else as different.
+
 ## Rule ID scheme
 | Prefix | Stage | Examples |
 |---|---|---|
@@ -45,7 +54,7 @@ A resubmission keeps the same submission ID with a new version number. The whole
 | `FMT-` | Format | `FMT-PAN-01`, `FMT-GSTIN-01..03` (structure, state code, checksum), `FMT-IFSC-01`, `FMT-ACCT-01` |
 | `DOC-` | Document reading | document type matches slot, fields readable |
 | `XREF-` | Cross-reference | names agree, PAN inside GSTIN = declared PAN, GSTIN state = address state, PAN holder type = entity type |
-| `RISK-` | Risk | bank account / GSTIN / PAN already on another vendor |
+| `RISK-` | Risk | `RISK-01` bank account on another vendor, `RISK-02` GSTIN already onboarded, `RISK-03` PAN on an unrelated vendor, `RISK-04` pattern of inconsistencies, `RISK-05` free email on a company |
 
 ## Test data
 All entities, IDs and documents are fictitious and watermarked SPECIMEN. GSTINs are generated with the real checksum so they pass format validation.
